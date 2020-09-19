@@ -1,74 +1,42 @@
-try: 
-    from BeautifulSoup import BeautifulSoup
-except ImportError:
-    from bs4 import BeautifulSoup
 import requests
+from lxml import html
+import json
 
-def MonthTranslate(monthText):
-    if monthText == "OCAK":
-        return "JANUARY"
-    elif monthText == "ŞUBAT":
-        return "FEBRURARY"
-    elif monthText == "MART":
-        return "MARCH"
-    elif monthText == "NİSAN":
-        return "APRIL"
-    elif monthText == "MAYIS":
-        return "MAY"
-    elif monthText == "HAZIRAN":
-        return "JUNE"
-    elif monthText == "TEMMUZ":
-        return "JULY"
-    elif monthText == "AĞUSTOS":
-        return "AUGUST"
-    elif monthText == "EYLÜL":
-        return "SEPTEMBER"
-    elif monthText == "EKİM":
-        return "OCTOBER"
-    elif monthText == "KASIM":
-        return "NOVEMBER"
-    elif monthText == "ARALIK":
-        return "DECEMBER"
-
-r = requests.get("https://covid19.saglik.gov.tr/")
-page_source = r.content
-parsed_html = BeautifulSoup(page_source, features="html.parser")
-t_count = str((parsed_html.body.find_all("span")[1].text).strip())
-v_count = str((parsed_html.body.find_all("span")[3].text).strip())
-d_count = str((parsed_html.body.find_all("span")[5].text).strip())
-b_count = str((parsed_html.body.find_all("span")[7].text).strip())
-e_count = str((parsed_html.body.find_all("span")[9].text).strip())
-c_count = str((parsed_html.body.find_all("span")[11].text).strip())
-tt_count = str((parsed_html.body.find_all("span")[13].text).strip())
-tv_count = str((parsed_html.body.find_all("span")[15].text).strip())
-td_count = str((parsed_html.body.find_all("span")[17].text).strip())
-tc_count = str((parsed_html.body.find_all("span")[19].text).strip())
-day = str((parsed_html.body.find_all("p")[1].text).strip())
-month = str((parsed_html.body.find_all("p")[2].text).strip())
-year = str((parsed_html.body.find_all("p")[3].text).strip())
+buffer = json.loads(html.fromstring(requests.get("https://covid19.saglik.gov.tr/", headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"}).content).xpath('//script[contains(., "sondurumjson")]/text()')[1].replace("\n", "").replace("//<![CDATA[", "").replace("//]]>", "").replace("var sondurumjson = [", "").replace("];", ""))
+date = buffer["tarih"]
+daily_tests = buffer["gunluk_test"]
+daily_detections = buffer["gunluk_vaka"]
+daily_deaths = buffer["gunluk_vefat"]
+daily_cures = buffer["gunluk_iyilesen"]
+all_tests = buffer["toplam_test"]
+all_detections = buffer["toplam_vaka"]
+all_deaths = buffer["toplam_vefat"]
+all_cures = buffer["toplam_iyilesen"]
+pneumonia_rate = buffer["hastalarda_zaturre_oran"]
+critical_sick_rate = buffer["hastalarda_zaturre_oran"]
 print("-------Türkiye Koronavirüs Durumu-------")
-print("Tarih -> %s %s %s"%(day, month, year))
-print("Test Sayısı -> %s"%(t_count))
-print("Vaka Sayısı -> %s"%(v_count))
-print("Ölüm Sayısı -> %s"%(d_count))
-print("Yoğun Bakım Sayısı -> %s"%(b_count))
-print("Entube Sayısı -> %s"%(e_count))
-print("Tedavi Olan Sayısı -> %s"%(c_count))
-print("Günlük Test Sayısı -> %s"%(tt_count))
-print("Günlük Vaka Sayısı -> %s"%(tv_count))
-print("Günlük Ölüm Sayısı -> %s"%(td_count))
-print("Günlük İyileşen Sayısı -> %s"%(tc_count))
+print("Tarih (gg/AA/yyyy) -> %s"%(date))
+print("Test Sayısı -> %s"%(all_tests))
+print("Vaka Sayısı -> %s"%(all_detections))
+print("Ölüm Sayısı -> %s"%(all_deaths))
+#print("Yoğun Bakım Sayısı -> %s"%(b_count)) DEVLET BU KONUDA VERI AKISINI DURDURDU
+#print("Entube Sayısı -> %s"%(e_count)) DEVLET BU KONUDA VERI AKISINI DURDURDU
+print("Tedavi Olan Sayısı -> %s"%(all_cures))
+print("Günlük Test Sayısı -> %s"%(daily_tests))
+print("Günlük Vaka Sayısı -> %s"%(daily_detections))
+print("Günlük Ölüm Sayısı -> %s"%(daily_deaths))
+print("Günlük İyileşen Sayısı -> %s"%(daily_cures))
 print("----------------------------------------")
 print("-------Turkish Coronavirus Status-------")
-print("Date -> %s %s %s"%(day, MonthTranslate(month), year))
-print("Test Count -> %s"%(t_count))
-print("Sick Count -> %s"%(v_count))
-print("Death Count -> %s"%(d_count))
-print("Intensive Care Count -> %s"%(b_count))
-print("Entube Count -> %s"%(e_count))
-print("Cured Count -> %s"%(c_count))
-print("Daily Test Sayısı -> %s"%(tt_count))
-print("Daily Sick Sayısı -> %s"%(tv_count))
-print("Daily Death Sayısı -> %s"%(td_count))
-print("Daily Cured Sayısı -> %s"%(tc_count))
+print("Date (dd/MM/yyyy) -> %s"%(date))
+print("Test Count -> %s"%(all_tests))
+print("Sick Count -> %s"%(all_detections))
+print("Death Count -> %s"%(all_deaths))
+#print("Intensive Care Count -> %s"%(b_count)) GOVERMENT STOPPED GIVING THIS DATA
+#print("Entube Count -> %s"%(e_count)) GOVERMENT STOPPED GIVING THIS DATA
+print("Cured Count -> %s"%(all_cures))
+print("Daily Test Sayısı -> %s"%(daily_tests))
+print("Daily Sick Sayısı -> %s"%(daily_detections))
+print("Daily Death Sayısı -> %s"%(daily_deaths))
+print("Daily Cured Sayısı -> %s"%(daily_cures))
 print("----------------------------------------")
