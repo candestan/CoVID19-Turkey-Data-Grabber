@@ -9,11 +9,10 @@ daily_detections = buffer["gunluk_vaka"]
 daily_deaths = buffer["gunluk_vefat"]
 daily_cures = buffer["gunluk_iyilesen"]
 all_tests = buffer["toplam_test"]
-all_detections = buffer["toplam_vaka"]
+all_detections = buffer["toplam_hasta"]
 all_deaths = buffer["toplam_vefat"]
 all_cures = buffer["toplam_iyilesen"]
 pneumonia_rate = buffer["hastalarda_zaturre_oran"]
-critical_sick_rate = buffer["hastalarda_zaturre_oran"]
 print("-------Türkiye Koronavirüs Durumu-------")
 print("Tarih (gg/AA/yyyy) -> %s"%(date))
 print("Test Sayısı -> %s"%(all_tests))
